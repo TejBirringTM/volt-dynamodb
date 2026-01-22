@@ -1,0 +1,9 @@
+[tools]
+act = "latest"
+lazydocker = "latest"
+node = "24.13.0"
+pnpm = "10.27.0"
+
+[shell_alias]
+docker = "podman"
+test-ci = "act --container-architecture linux/amd64 push"

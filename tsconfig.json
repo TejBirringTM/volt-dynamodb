@@ -1,0 +1,96 @@
+{
+  "compilerOptions": {
+    // === Input Settings ===
+    // Include declarations from ES and Node
+    "lib": [
+      "ES2024",
+      "ESNext.Array",
+      "ESNext.Collection",
+      "ESNext.Error",
+      "ESNext.Iterator",
+      "ESNext.Promise"
+    ],
+    "types": ["node"],
+    // Do no permit use of JS files directly
+    "allowJs": false,
+    // Skip type checking of declaration files for faster compilation
+    "skipLibCheck": true,
+    // Allow importing JSON files (useful for shared config)
+    "resolveJsonModule": true,
+    // Allow default imports from modules without default exports
+    "esModuleInterop": true,
+    // Ensure consistent casing in imports across different OSes
+    "forceConsistentCasingInFileNames": true,
+
+    // === Output Settings ===
+    "target": "ES2024",
+    "outDir": "./dist",
+    "removeComments": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    // === Path Mapping ===
+    // Set base for resolving non-relative module names
+    "baseUrl": ".",
+    // Map imports to make code more maintainable
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    // === Module System ===
+    // Use ES modules for maximum compatibility with both environments
+    // "module": "esnext",
+    // Let bundlers (Webpack, Vite) or Node.js resolve modules appropriately
+    "moduleResolution": "bundler",
+
+    // === Interoperability ===
+    // Ensure any single source file can be safely transpiled individually
+    "isolatedModules": true,
+
+    // === Type Checking - Comprehensive Safety Checks ===
+    "strict": true,
+
+    // Prevent unused code
+    // "noUnusedLocals": true, // Error on unused local variables - keeps code clean
+    // "noUnusedParameters": true, // Error on unused function parameters - catches refactoring mistakes
+
+    // Ensure complete logic coverage
+    "noImplicitReturns": true, // Error when not all code paths return a value - prevents undefined returns
+    "noFallthroughCasesInSwitch": true, // Error on switch fallthrough without break/return - catches common bugs
+    "allowUnreachableCode": false, // Error on code that can never execute - identifies dead code
+    "allowUnusedLabels": false, // Error on unused labels - prevents confusing code
+
+    // Class inheritance safety
+    "noImplicitOverride": true, // Require 'override' keyword when overriding methods - prevents accidental overrides
+
+    // Index and property access safety
+    "noUncheckedIndexedAccess": true, // Add undefined to indexed access types - prevents array/object access errors
+    "noPropertyAccessFromIndexSignature": true, // Force bracket notation for index signatures - makes dynamic access explicit
+
+    // Import/Export precision
+    "verbatimModuleSyntax": true, // Require explicit 'import type' for types - helps bundlers tree-shake better
+
+    // Optional property precision
+    "exactOptionalPropertyTypes": true, // Distinguish undefined from missing properties - more precise optional types
+
+    // Error handling safety
+    "useUnknownInCatchVariables": true, // Catch variables are 'unknown' not 'any' - forces error type validation
+
+    // Implicit any prevention (covered by strict but worth highlighting)
+    "noImplicitAny": true, // Error on implicit any types - ensures all types are explicit
+    "noImplicitThis": true, // Error when 'this' has implicit any type - prevents context errors
+
+    // Additional strictness (covered by strict flag)
+    "strictNullChecks": true, // Enforce null/undefined checking - prevents null reference errors
+    "strictFunctionTypes": true, // Stricter function type checking - prevents unsound assignments
+    "strictBindCallApply": true, // Type check bind/call/apply - ensures correct usage
+    "strictPropertyInitialization": true, // Ensure class properties are initialized - prevents undefined properties
+    "alwaysStrict": true, // Parse in strict mode and emit "use strict" - enforces modern JS
+
+    // Generic type safety
+    "noStrictGenericChecks": false // Enable strict generic checking (default) - ensures sound generic usage
+  },
+  "include": ["src/**/*", "*.config.ts", "**/*.test.ts", "**/*.spec.ts"],
+  "exclude": ["node_modules", "dist"]
+}
