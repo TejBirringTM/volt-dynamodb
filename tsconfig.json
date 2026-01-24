@@ -14,7 +14,7 @@
     // Do no permit use of JS files directly
     "allowJs": false,
     // Skip type checking of declaration files for faster compilation
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     // Allow importing JSON files (useful for shared config)
     "resolveJsonModule": true,
     // Allow default imports from modules without default exports
@@ -35,7 +35,8 @@
     "baseUrl": ".",
     // Map imports to make code more maintainable
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@framework/*": ["./src/_framework_/*"]
     },
 
     // === Module System ===
@@ -91,6 +92,6 @@
     // Generic type safety
     "noStrictGenericChecks": false // Enable strict generic checking (default) - ensures sound generic usage
   },
-  "include": ["src/**/*", "*.config.ts", "**/*.test.ts", "**/*.spec.ts"],
+  "include": ["src/**/*", "types/**/*", "*.config.ts", "**/*.test.ts", "**/*.spec.ts"],
   "exclude": ["node_modules", "dist"]
 }

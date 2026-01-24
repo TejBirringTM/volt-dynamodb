@@ -67,6 +67,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.974.0",
     "@changesets/cli": "^2.29.8",
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
@@ -85,5 +86,11 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.1",
     "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.974.0"
   }
 }
