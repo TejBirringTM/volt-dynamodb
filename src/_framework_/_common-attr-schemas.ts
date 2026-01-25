@@ -88,10 +88,10 @@ export function StringDictionarySch<Key extends string>({
   const valueSchema = Optional(StringSch({ inclusiveMinLength: 1 }));
 
   if (keys) {
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return z.record(z.enum(keys as [Key, ...Key[]]), valueSchema) as any;
   } else {
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
     return z.record(StringSch({ inclusiveMinLength: 1 }), valueSchema) as any;
   }
 }
