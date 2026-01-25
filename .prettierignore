@@ -2,5 +2,21 @@ node_modules/
 
 dist/
 
+coverage/
+
+*.log
+
+.DS_Store
+
+.env
+.env.local
+
+.changeset/*.md
+!.changeset/README.md
+
+.localstack-volume/
+
 pnpm-lock.yaml
 pnpm-workspace.yaml
+
+.husky/

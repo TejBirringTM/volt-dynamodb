@@ -1,6 +1,7 @@
 import { type Config } from 'prettier';
 
 const config: Config = {
+  plugins: ['prettier-plugin-sh'],
   semi: true,
   trailingComma: 'es5',
   singleQuote: true,
