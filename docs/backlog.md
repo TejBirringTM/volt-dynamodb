@@ -8,15 +8,6 @@ Please find log of [Key Decisions](#key-decisions) and [Current Blockers](#curre
 
 Items are ordered by priority. Higher items should be worked on first.
 
-### **F-001:** Set up AWS DynamoDB emulator for local development and testing
-
-- **Priority:** Critical
-- **Estimate:** Simple
-- **Technical Feature:**
-  - Implement development infrastructure to create, start, stop, and clean up AWS DynamoDB emulation
-
-  - Use [LocalStack](https://www.localstack.cloud/) Docker image and Docker Compose for orchestration
-
 ### **F-002:** Add support for LSIs and GSIs
 
 - **Priority:** High
@@ -81,6 +72,15 @@ Items that are not yet prioritised, likely awaiting further refinement:
 ## Completed
 
 Items that have been successfully implemented:
+
+### **F-001:** Set up AWS DynamoDB emulator for local development and testing
+
+- **Priority:** Critical
+- **Estimate:** Simple
+- **Technical Feature:**
+  - Implement development infrastructure to create, start, stop, and clean up AWS DynamoDB emulation
+
+  - Use [LocalStack](https://www.localstack.cloud/) Docker image and Docker Compose for orchestration
 
 ## Notes & Definitions
 
