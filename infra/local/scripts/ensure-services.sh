@@ -18,5 +18,14 @@ if [[ -n "$(docker ps -q -f name=volt-dynamodb-${GIT_COMMIT_SHA}-localstack-main
 else
   echo "🚀 Starting LocalStack..."
   bash -c "cd ${PROJECT_ROOT}/infra/local && docker compose up --force-recreate --detach"
+  sleep 10 # allow time for initialisation
   echo "✅ LocalStack is running!"
+fi
+
+# Check if LocalStack is configured correctly
+if ! aws dynamodb list-tables &> /dev/null; then
+  echo "❌ AWS CLI can not find LocalStack"
+  exit 1
+else
+  echo "✅ LocalStack is working!"
 fi
