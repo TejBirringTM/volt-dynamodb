@@ -3,6 +3,7 @@ import {
   TableNameSch as IndexNameSch,
   TableBillingModeSch,
   TableWarmThroughputRequirementSch,
+  type TableBillingMode,
   type TableRequirement,
 } from './_table';
 import { KeyAttributeRequirementSch } from './_attribute';
@@ -13,7 +14,7 @@ export const GlobalIndexRequirementSch = <const R extends TableRequirement>(requ
   z.object({
     name: IndexNameSch,
     primaryKey: KeyAttributeRequirementSch,
-    sortKey: KeyAttributeRequirementSch,
+    sortKey: Optional(KeyAttributeRequirementSch),
     projection: IndexAttributeProjectionRequirementSch,
     throughputRequirement:
       requirement.billingMode.type === 'PAY_PER_REQUEST'
@@ -24,5 +25,16 @@ export const GlobalIndexRequirementSch = <const R extends TableRequirement>(requ
     warmThroughputRequirement: Optional(TableWarmThroughputRequirementSch),
   });
 export type GlobalIndexRequirement<R extends TableRequirement> = z.infer<
-  typeof GlobalIndexRequirementSch<R>
+  ReturnType<typeof GlobalIndexRequirementSch<R>>
 >;
+
+export type GlobalIndexRequirementInput<R extends TableRequirement> = Omit<
+  GlobalIndexRequirement<R>,
+  'throughputRequirement'
+> & {
+  throughputRequirement: R['billingMode']['type'] extends 'PAY_PER_REQUEST'
+    ? FilterByProp<TableBillingMode, 'type', 'PAY_PER_REQUEST'>
+    : R['billingMode']['type'] extends 'PROVISIONED'
+      ? FilterByProp<TableBillingMode, 'type', 'PROVISIONED'>
+      : never;
+};

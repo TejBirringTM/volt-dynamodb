@@ -9,3 +9,5 @@ export const LocalIndexRequirementSch = z.object({
   projection: IndexAttributeProjectionRequirementSch,
 });
 export type LocalIndexRequirement = z.infer<typeof LocalIndexRequirementSch>;
+
+export type LocalIndexRequirementInput = LocalIndexRequirement;

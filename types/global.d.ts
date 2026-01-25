@@ -19,6 +19,14 @@ import type {
 declare global {
   type Optional<T> = T | undefined | null;
 
+  type FilterByProp<T, PropKey extends string | number | symbol, PropVal> = T extends {
+    [K in PropKey]: PropVal;
+  }
+    ? T
+    : never;
+
+  type AssertExtends<A, B> = A extends B ? A : never;
+
   type Client = DynamoDBClient;
 }
 
