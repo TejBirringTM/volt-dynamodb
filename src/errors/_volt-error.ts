@@ -1,14 +1,17 @@
 const errorMap = {
   unimplemented: (className: string, methodName: string) => ({
-    message: `${className}.${methodName} has not been implemented`,
+    message: `unimplemented: ${className}.${methodName} has not been implemented`,
+  }),
+  'bad-argument': (message: string) => ({
+    message: `bad-argument: ${message}`,
   }),
 } as const satisfies {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [K: string]: (...args: any[]) => BaseVoltErrorContext;
+  [K: string]: (...args: any[]) => BaseVoltErrorContext<typeof K>;
 };
 
-type BaseVoltErrorContext = {
-  message: string;
+type BaseVoltErrorContext<K extends string> = {
+  message: `${K}: ${string}`;
 };
 
 type ErrorMap = typeof errorMap;
