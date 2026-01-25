@@ -1,0 +1,13 @@
+services:
+  localstack:
+    container_name: volt-dynamodb-${GIT_COMMIT_SHA}-localstack-main
+    image: localstack/localstack
+    ports:
+      - '4566:4566' # LocalStack Gateway
+      - '4510-4559:4510-4559' # external services port range
+    environment:
+      # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+      - LOCALSTACK_DEBUG=${LOCALSTACK_DEBUG:-1}
+    volumes:
+      - '${LOCALSTACK_VOLUME_DIR:-./.localstack-volume}:/var/lib/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'

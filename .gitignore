@@ -13,3 +13,5 @@ coverage/
 
 .changeset/*.md
 !.changeset/README.md
+
+.localstack-volume/

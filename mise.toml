@@ -1,9 +1,43 @@
 [tools]
-act = "latest"
+# Docker, Linux VM, & UI
+"aqua:docker/cli" = "29.1.3"
+"aqua:docker/compose" = "5.0.1"
+"aqua:docker/buildx" = "0.30.1"
+"aqua:colima" = "0.9.1"
+"aqua:lima" = "2.0.2"
 lazydocker = "latest"
+# Act - for CI testing
+act = "latest"
+# AWS Client CLI
+"aqua:aws/aws-cli" = "latest"
+# Node runtime & package manager
 node = "24.13.0"
 pnpm = "10.27.0"
 
+[env]
+PROJECT_ROOT = { value = "{{config_root}}" }
+# Expose Docker CLI config path to env (used to find plugins)
+DOCKER_CONFIG = { value = "{{exec(command='echo \"$(mise where aqua:docker/cli)/.config\"')}}", tools = true }
+# Expose Git branch and commit hash to env
+GIT_BRANCH_NAME = { value = "{{exec(command='git rev-parse --abbrev-ref HEAD')}}" }
+GIT_COMMIT_SHA = { value = "{{exec(command='git rev-parse --short HEAD')}}" }
+# For LocalStack (see https://docs.localstack.cloud/aws/integrations/aws-native-tools/aws-cli/#configuring-a-custom-profile)
+AWS_CONFIG_FILE = { value = "{{exec(command='echo \"$(pwd)/infra/local/.aws/config\"')}}" }
+AWS_SHARED_CREDENTIALS_FILE = { value = "{{exec(command='echo \"$(pwd)/infra/local/.aws/credentials\"')}}" }
+AWS_PROFILE = "localstack"
+
 [shell_alias]
-docker = "podman"
 test-ci = "act --container-architecture linux/amd64 push"
+ensure-docker = "mise ensure-docker"
+ensure-local-services = "mise ensure-local-services"
+
+[tasks.ensure-docker]
+hide = true
+description = "Ensure support for Docker containers is available on the environment."
+file = "infra/local/scripts/ensure-docker.sh"
+
+[tasks.ensure-local-services]
+hide = true
+depends = ["ensure-docker"]
+description = "Ensure services are running for local development and testing."
+file = "infra/local/scripts/ensure-services.sh"
