@@ -83,7 +83,6 @@
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
     "prettier-plugin-sh": "^0.18.0",
-    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.1",
     "vitest": "^4.0.18",
@@ -92,5 +91,8 @@
   "peerDependencies": {
     "@aws-sdk/client-dynamodb": "^3.974.0",
     "zod": "^4.3.6"
+  },
+  "dependencies": {
+    "tsup": "~8.4.0"
   }
 }
