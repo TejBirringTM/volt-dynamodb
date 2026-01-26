@@ -8,17 +8,6 @@ Please find log of [Key Decisions](#key-decisions) and [Current Blockers](#curre
 
 Items are ordered by priority. Higher items should be worked on first.
 
-### **F-002:** Add support for LSIs and GSIs
-
-- **Priority:** High
-- **Estimate:** Simple
-- **Technical Feature:**
-  - Add Local Secondary Index (LSI) abstraction on `TableRequirement` schema
-
-  - Add Global Secondary Index (GSI) abstraction on `TableRequirement` schema
-
-  - Ensure maximum type inference
-
 ### **F-003:** Basic table state machine and CRUD actions
 
 - **Priority:** High
@@ -81,6 +70,17 @@ Items that have been successfully implemented:
   - Implement development infrastructure to create, start, stop, and clean up AWS DynamoDB emulation
 
   - Use [LocalStack](https://www.localstack.cloud/) Docker image and Docker Compose for orchestration
+
+### **F-002:** Add support for LSIs and GSIs
+
+- **Priority:** High
+- **Estimate:** Simple
+- **Technical Feature:**
+  - Add Local Secondary Index (LSI) abstraction on `TableRequirement` schema
+
+  - Add Global Secondary Index (GSI) abstraction on `TableRequirement` schema
+
+  - Ensure maximum type inference
 
 ## Notes & Definitions
 
