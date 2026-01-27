@@ -19,6 +19,9 @@ import type {
 declare global {
   type Optional<T> = T | undefined | null;
 
+  // use var to allow for redeclaration in TS
+  var console: never;
+
   type FilterByProp<T, PropKey extends string | number | symbol, PropVal> = T extends {
     [K in PropKey]: PropVal;
   }
