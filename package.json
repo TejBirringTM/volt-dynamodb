@@ -27,8 +27,8 @@
     "list-": "leasot --tags \"TODO FIXME\" --ignore \"node_modules\",\"dist\" \"**/*.{ts,sh}\"",
     "build": "tsup",
     "dev": "mise ensure-local-services && tsup --watch",
-    "test": "mise ensure-local-services && vitest run",
-    "test:watch": "mise ensure-local-services && vitest",
+    "test": "mise ensure-local-services && vitest run --reporter=verbose",
+    "test:watch": "mise ensure-local-services && vitest --reporter=verbose",
     "test:coverage": "mise ensure-local-services && vitest run --coverage",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
@@ -87,6 +87,7 @@
     "prettier-plugin-sh": "^0.18.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.53.1",
+    "vite-tsconfig-paths": "^6.0.5",
     "vitest": "^4.0.18",
     "zod": "^4.3.6"
   },
@@ -95,6 +96,9 @@
     "zod": "^4.3.6"
   },
   "dependencies": {
+    "effect": "^3.19.15",
+    "pino": "^10.3.0",
+    "pino-pretty": "^13.1.3",
     "tsup": "~8.4.0"
   }
 }
