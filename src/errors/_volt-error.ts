@@ -2,8 +2,8 @@ const errorMap = {
   unimplemented: (className: string, methodName: string) => ({
     message: `unimplemented: ${className}.${methodName} has not been implemented`,
   }),
-  'bad-argument': (message: string) => ({
-    message: `bad-argument: ${message}`,
+  'invalid-argument': (message: string) => ({
+    message: `invalid-argument: ${message}`,
   }),
 } as const satisfies {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
