@@ -1,6 +1,7 @@
 import z from 'zod';
 import type { $ZodShape, $ZodType } from 'zod/v4/core';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function declareSchema<
   SchemaKey extends string,
   SchemaVersion extends number,
@@ -14,6 +15,7 @@ export function declareSchema<
   return schema;
 }
 
-export const Optional = <T extends $ZodType>(type: T) => z.nullish(type);
+export const Optional = <T extends $ZodType>(type: T): z.ZodOptional<z.ZodNullable<T>> =>
+  z.nullish(type);
 
 export * as CommonAttributeSchemas from './_common-attr-schemas';

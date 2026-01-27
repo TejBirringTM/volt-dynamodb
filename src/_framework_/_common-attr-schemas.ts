@@ -1,6 +1,10 @@
 import z from 'zod';
 import { Optional } from './schema';
 
+export const StringTimestampSch = (): z.ZodISODateTime => z.iso.datetime();
+
+export const BooleanSch = (): z.ZodBoolean => z.boolean();
+
 export type NumericAttributeSchemaArgs<T extends number | bigint> = {
   inclusiveMinValue?: T;
   inclusiveMaxValue?: T;
@@ -9,7 +13,7 @@ export type NumericAttributeSchemaArgs<T extends number | bigint> = {
 export const NumberSch = ({
   inclusiveMinValue,
   inclusiveMaxValue,
-}: NumericAttributeSchemaArgs<number>) => {
+}: NumericAttributeSchemaArgs<number>): z.ZodNumber => {
   const schema = z.number();
   if (inclusiveMinValue) {
     schema.gte(inclusiveMinValue);
@@ -17,13 +21,14 @@ export const NumberSch = ({
   if (inclusiveMaxValue) {
     schema.gte(inclusiveMaxValue);
   }
+  return schema;
 };
 
 export const IntegerSch = ({
   inclusiveMinValue,
   inclusiveMaxValue,
-}: NumericAttributeSchemaArgs<bigint>) => {
-  const schema = z.bigint();
+}: NumericAttributeSchemaArgs<number>): z.ZodNumber => {
+  const schema = z.int();
   if (inclusiveMinValue) {
     schema.gte(inclusiveMinValue);
   }
@@ -41,7 +46,7 @@ export type StringAttributeSchemaArgs = {
 export const StringSch = ({
   inclusiveMinLength,
   inclusiveMaxLength,
-}: StringAttributeSchemaArgs) => {
+}: StringAttributeSchemaArgs): z.ZodString => {
   const schema = z.string();
   if (inclusiveMinLength) {
     schema.min(inclusiveMinLength);
@@ -60,7 +65,7 @@ export type BinaryAttributeSchemaArgs = {
 export const BinarySch = ({
   inclusiveMinLength,
   inclusiveMaxLength,
-}: BinaryAttributeSchemaArgs) => {
+}: BinaryAttributeSchemaArgs): z.ZodBase64 => {
   const schema = z.base64();
   const toBase64Length = (nBytes: number): number => Math.ceil(nBytes * 4); // because 1 byte = 8 bits => 12 bits needed in base64 sequence = 4 base64 chars
   if (inclusiveMinLength) {
