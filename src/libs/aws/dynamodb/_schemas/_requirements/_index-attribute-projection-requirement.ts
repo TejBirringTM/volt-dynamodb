@@ -1,5 +1,5 @@
 import z from 'zod';
-import { AttributeNameSch } from './_attribute';
+import { AttributeNameSch } from '../_common/_attribute';
 
 export const IndexAttributeProjectionRequirementSch = z.discriminatedUnion('type', [
   z.object({

@@ -1,20 +1,21 @@
 import z from 'zod';
+import { type TableRequirement } from './_table';
+import { KeyAttributeSch } from '../_common/_attribute';
+import { IndexAttributeProjectionRequirementSch } from './_index-attribute-projection-requirement';
+import { Optional } from '@/_framework_/schema';
 import {
   TableNameSch as IndexNameSch,
   TableBillingModeSch,
-  TableWarmThroughputRequirementSch,
+  TableWarmThroughputSch,
   type TableBillingMode,
-  type TableRequirement,
-} from './_table';
-import { KeyAttributeRequirementSch } from './_attribute';
-import { IndexAttributeProjectionRequirementSch } from './_index-attribute-projection-requirement';
-import { Optional } from '@/_framework_/schema';
+} from '../_common/_table';
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const GlobalIndexRequirementSch = <const R extends TableRequirement>(requirement: R) =>
   z.object({
     name: IndexNameSch,
-    primaryKey: KeyAttributeRequirementSch,
-    sortKey: Optional(KeyAttributeRequirementSch),
+    partitionKey: KeyAttributeSch,
+    sortKey: Optional(KeyAttributeSch),
     projection: IndexAttributeProjectionRequirementSch,
     throughputRequirement:
       requirement.billingMode.type === 'PAY_PER_REQUEST'
@@ -22,7 +23,7 @@ export const GlobalIndexRequirementSch = <const R extends TableRequirement>(requ
         : requirement.billingMode.type === 'PROVISIONED'
           ? TableBillingModeSch.options[1]
           : z.never(),
-    warmThroughputRequirement: Optional(TableWarmThroughputRequirementSch),
+    warmThroughputRequirement: Optional(TableWarmThroughputSch),
   });
 export type GlobalIndexRequirement<R extends TableRequirement> = z.infer<
   ReturnType<typeof GlobalIndexRequirementSch<R>>

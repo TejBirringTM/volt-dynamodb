@@ -13,8 +13,8 @@ const keyAttributeTypeMap = {
 export type KeyAttributeType = keyof typeof keyAttributeTypeMap;
 export const KeyAttributeTypeSch = z.enum(Object.keys(keyAttributeTypeMap) as KeyAttributeType[]);
 
-export const KeyAttributeRequirementSch = z.object({
+export const KeyAttributeSch = z.object({
   name: AttributeNameSch,
   type: KeyAttributeTypeSch,
 });
-export type KeyAttributeRequirement = z.infer<typeof KeyAttributeRequirementSch>;
+export type KeyAttribute = z.infer<typeof KeyAttributeSch>;
