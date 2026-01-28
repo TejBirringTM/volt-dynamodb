@@ -89,3 +89,17 @@ export const TableWarmThroughputSch = z.object({
   writeUnitsPerSecond: Optional(Attr.IntegerSch({ inclusiveMinValue: 1 })),
 });
 export type TableWarmThroughput = z.infer<typeof TableWarmThroughputSch>;
+
+export const TableStatusSch = z.enum([
+  'ACTIVE',
+
+  'ARCHIVING',
+  'ARCHIVED',
+
+  'CREATING',
+  'UPDATING',
+  'DELETING',
+
+  'INACCESSIBLE_ENCRYPTION_CREDENTIALS',
+  'REPLICATION_NOT_AUTHORIZED',
+]);

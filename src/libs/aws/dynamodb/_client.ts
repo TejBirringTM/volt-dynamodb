@@ -1,7 +1,7 @@
 import { VoltError } from '@/errors';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-let defaultClient: DynamoDBClient | null = null;
+let defaultClient: Optional<DynamoDBClient> = undefined;
 
 export function setDefaultClient(client: DynamoDBClient): void {
   defaultClient = client;

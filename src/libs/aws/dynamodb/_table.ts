@@ -1,8 +1,12 @@
 import {
   CreateTableCommand,
   DeleteTableCommand,
+  DescribeTableCommand,
   ListTablesCommand,
+  ResourceNotFoundException,
   UpdateTableCommand,
+  waitUntilTableExists,
+  waitUntilTableNotExists,
   type DynamoDBClient,
   type KeySchemaElement,
 } from '@aws-sdk/client-dynamodb';
@@ -17,8 +21,22 @@ import {
 import { TableRequirementSch, type TableRequirement } from './_schemas/_requirements/_table';
 import { getClient } from './_client';
 // import { VoltError } from '@/errors';
-import { attrToAwsAttrDef, attrToAwsKeySchemaDef, projToAwsProjDef } from './_utils';
+import {
+  attrToAwsAttrDef,
+  attrToAwsKeySchema,
+  awsIndexToProjection,
+  awsKeySchemaToAttrs,
+  awsTableOrIndexToBillingMode,
+  awsTableOrIndexToWarmThroughput,
+  projToAwsProj,
+} from './_utils';
 import logger from '@/_framework_/logger';
+import { VoltError } from '@/errors';
+import { TableDescriptionSch, type TableDescription } from './_schemas/_descriptions/_table';
+import type { localIndexDescription } from './_schemas/_descriptions/_local-index';
+import type { GlobalIndexDescription } from './_schemas/_descriptions/_global-index';
+
+const MAX_WAIT_TIME = 30; // seconds
 
 export class Table<
   const R extends TableRequirement,
@@ -58,7 +76,6 @@ export class Table<
   }
   /**
    * Creates the table in AWS cloud infrastructure.
-   * Throws on failure.
    *
    * @param client the AWS SDK DynamoDB Client instance
    */
@@ -77,13 +94,12 @@ export class Table<
       .map((attr) => attrToAwsAttrDef(attr));
     const keySchema = (
       [
-        attrToAwsKeySchemaDef('HASH', r.partitionKey),
-        r.sortKey ? attrToAwsKeySchemaDef('RANGE', r.sortKey) : undefined,
+        attrToAwsKeySchema('HASH', r.partitionKey),
+        r.sortKey ? attrToAwsKeySchema('RANGE', r.sortKey) : undefined,
       ] satisfies (KeySchemaElement | undefined)[]
     ).filter((attr) => !!attr);
     // ignore if table exist; TODO: sync instead!
-    const tableNames = (await c.send(new ListTablesCommand())).TableNames ?? [];
-    if (tableNames.includes(r.name)) {
+    if (await this.isUp(client)) {
       logger.info(`Skipping table creation; table already exists: ${r.name}`);
       return;
     }
@@ -126,21 +142,18 @@ export class Table<
         LocalSecondaryIndexes: lsi.map((i) => ({
           IndexName: i.name,
           KeySchema: [
-            attrToAwsKeySchemaDef('HASH', r.partitionKey),
-            attrToAwsKeySchemaDef('RANGE', i.sortKey),
+            attrToAwsKeySchema('HASH', r.partitionKey),
+            attrToAwsKeySchema('RANGE', i.sortKey),
           ],
-          Projection: projToAwsProjDef(i.projection),
+          Projection: projToAwsProj(i.projection),
         })),
 
         GlobalSecondaryIndexes: gsi.map((i) => ({
           IndexName: i.name,
           KeySchema: i.sortKey
-            ? [
-                attrToAwsKeySchemaDef('HASH', i.partitionKey),
-                attrToAwsKeySchemaDef('RANGE', i.sortKey),
-              ]
-            : [attrToAwsKeySchemaDef('HASH', i.partitionKey)],
-          Projection: projToAwsProjDef(i.projection),
+            ? [attrToAwsKeySchema('HASH', i.partitionKey), attrToAwsKeySchema('RANGE', i.sortKey)]
+            : [attrToAwsKeySchema('HASH', i.partitionKey)],
+          Projection: projToAwsProj(i.projection),
           WarmThroughput:
             i.warmThroughputRequirement &&
             (i.warmThroughputRequirement.readUnitsPerSecond ||
@@ -186,10 +199,16 @@ export class Table<
       })
     );
     logger.info(result.TableDescription, 'Table created');
+    await waitUntilTableExists({ client: c, maxWaitTime: MAX_WAIT_TIME }, { TableName: r.name });
+  }
+  async isUp(client?: DynamoDBClient): Promise<boolean> {
+    const c = getClient(client);
+    const r = this.tableRequirement;
+    const tableNames = (await c.send(new ListTablesCommand())).TableNames ?? [];
+    return tableNames.includes(r.name);
   }
   /**
    * Destroy the table in AWS cloud infrastructure, if it exists.
-   * Throws on failure.
    *
    * @param client the AWS SDK DynamoDB Client instance
    */
@@ -197,8 +216,7 @@ export class Table<
     const c = getClient(client);
     const r = this.tableRequirement;
     // ignore if table doesn't exist
-    const tableNames = (await c.send(new ListTablesCommand())).TableNames ?? [];
-    if (!tableNames.includes(r.name)) {
+    if (!(await this.isUp(c))) {
       logger.info(`Skipping table deletion; table does not exists: ${r.name}`);
       return;
     }
@@ -215,11 +233,11 @@ export class Table<
         TableName: r.name,
       })
     );
+    await waitUntilTableNotExists({ client: c, maxWaitTime: MAX_WAIT_TIME }, { TableName: r.name });
     logger.info(result.TableDescription, 'Table deleted');
   }
   /**
    * Ensure table in AWS cloud infrastructure matches the declaration.
-   * Throws on failure.
    *
    * @param client the AWS SDK DynamoDB Client instance
    */
@@ -229,12 +247,83 @@ export class Table<
   // }
   /**
    * Probe the table in AWS cloud infrastructure for information.
-   * Throws on failure.
+   * Throws if table does not exist.
    *
    * @param client the AWS SDK DynamoDB Client instance
    */
-  // probe(client?: DynamoDBClient) {
-  //   const _client = getClient(client);
-  //   throw new VoltError('unimplemented', 'Table', 'probe');
-  // }
+  async probe(client?: DynamoDBClient): Promise<TableDescription> {
+    const c = getClient(client);
+    const r = this.tableRequirement;
+    try {
+      const tableDescription = (
+        await c.send(
+          new DescribeTableCommand({
+            TableName: r.name,
+          })
+        )
+      ).Table;
+      if (!tableDescription) {
+        throw new VoltError(
+          'unexpected-response-from-upstream',
+          'no table description received from AWS'
+        );
+      }
+      const keyAttributes = awsKeySchemaToAttrs(
+        tableDescription.AttributeDefinitions!,
+        tableDescription.KeySchema!
+      );
+      return TableDescriptionSch.parse({
+        schemaId: 'TableDescription/v0',
+        name: tableDescription.TableName!,
+        arn: tableDescription.TableArn!,
+        id: tableDescription.TableId!,
+        billingMode: awsTableOrIndexToBillingMode(tableDescription),
+        class: tableDescription.TableClassSummary!.TableClass!,
+        createdAt: tableDescription.CreationDateTime!.toISOString(),
+        nItems: tableDescription.ItemCount!,
+        sizeBytes: tableDescription.TableSizeBytes!,
+        deletionProtection: tableDescription.DeletionProtectionEnabled!,
+        status: tableDescription.TableStatus!,
+        stream:
+          (tableDescription.StreamSpecification?.StreamEnabled
+            ? tableDescription.StreamSpecification.StreamViewType
+            : 'NONE') ?? 'NONE',
+        warmThroughput: awsTableOrIndexToWarmThroughput(tableDescription),
+        localSecondaryIndexes: tableDescription.LocalSecondaryIndexes?.map((idx) => {
+          const keys = awsKeySchemaToAttrs(tableDescription.AttributeDefinitions!, idx.KeySchema!);
+          return {
+            name: idx.IndexName!,
+            nItems: idx.ItemCount!,
+            sizeBytes: idx.IndexSizeBytes!,
+            sortKey: keys.sortKey!,
+            projection: awsIndexToProjection(idx),
+          } satisfies localIndexDescription;
+        }),
+        globalSecondaryIndexes: tableDescription.GlobalSecondaryIndexes?.map((idx) => {
+          const keys = awsKeySchemaToAttrs(tableDescription.AttributeDefinitions!, idx.KeySchema!);
+          return {
+            name: idx.IndexName!,
+            arn: idx.IndexArn!,
+            nItems: idx.ItemCount!,
+            sizeBytes: idx.IndexSizeBytes!,
+            status: idx.IndexStatus!,
+            partitionKey: keys.partitionKey!,
+            sortKey: keys.sortKey,
+            warmThroughputRequirement: awsTableOrIndexToWarmThroughput(idx),
+            projection: awsIndexToProjection(idx),
+            throughputRequirement: awsTableOrIndexToBillingMode(tableDescription, idx),
+          } satisfies GlobalIndexDescription;
+        }),
+        partitionKey: keyAttributes.partitionKey!,
+        sortKey: keyAttributes.sortKey,
+      } satisfies TableDescription);
+    } catch (err) {
+      if (err instanceof ResourceNotFoundException) {
+        throw new VoltError('table-not-up');
+      } else {
+        // throw any other type of error because we're not dealing with them here
+        throw err;
+      }
+    }
+  }
 }

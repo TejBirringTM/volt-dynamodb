@@ -13,3 +13,6 @@ export const IndexAttributeProjectionRequirementSch = z.discriminatedUnion('type
     attributeNames: AttributeNameSch.array(),
   }),
 ]);
+export type IndexAttributeProjectionRequirement = z.infer<
+  typeof IndexAttributeProjectionRequirementSch
+>;
