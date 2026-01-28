@@ -1,7 +1,8 @@
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { mockTableConst } from '@/__mocks__/table';
 import { sleep } from 'effect/Clock';
+import { VoltError } from '@/errors';
 
 const client = new DynamoDBClient();
 let table: ReturnType<typeof mockTableConst>;
@@ -25,5 +26,15 @@ describe('DynamoDB Table class', () => {
     await table.down(client);
     sleep('3 seconds');
     await table.down(client);
+  });
+  it('should describe the table - if it is up', async () => {
+    await table.up(client);
+    sleep('3 seconds');
+    await table.probe(client);
+  });
+  it('should error when the table is not available', async () => {
+    await table.down(client);
+    sleep('3 seconds');
+    await expect(table.probe(client)).rejects.toThrowError(VoltError);
   });
 });
