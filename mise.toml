@@ -4,7 +4,7 @@
 "aqua:docker/compose" = "5.0.1"
 "aqua:docker/buildx" = "0.30.1"
 "aqua:colima" = "0.9.1"
-"aqua:lima" = "2.0.2"
+"aqua:lima" = "2.0.3"
 lazydocker = "latest"
 # Act - for CI testing
 act = "latest"
