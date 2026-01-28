@@ -5,6 +5,15 @@ const errorMap = {
   'invalid-argument': (message: string) => ({
     message: `invalid-argument: ${message}`,
   }),
+  'invalid-operation': (message: string) => ({
+    message: `invalid-operation: ${message}`,
+  }),
+  'table-not-up': () => ({
+    message: `table-not-up: the table is not available in the cloud`,
+  }),
+  'unexpected-response-from-upstream': (message: string) => ({
+    message: `unexpected-response-from-upstream: ${message}`,
+  }),
 } as const satisfies {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K: string]: (...args: any[]) => BaseVoltErrorContext<typeof K>;
