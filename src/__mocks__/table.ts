@@ -23,7 +23,18 @@ export function mockTableConst() {
         application: 'MyApp',
       },
     },
-    localSecondaryIndexes: [],
+    localSecondaryIndexes: [
+      {
+        name: 'MyLSI',
+        sortKey: {
+          name: 'email',
+          type: 'STRING',
+        },
+        projection: {
+          type: 'PROJECT_ALL_ATTRIBUTES',
+        },
+      },
+    ],
     globalSecondaryIndexes: [
       {
         name: 'MyGSI',
