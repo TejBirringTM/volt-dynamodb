@@ -8,17 +8,13 @@ Please find log of [Key Decisions](#key-decisions) and [Current Blockers](#curre
 
 Items are ordered by priority. Higher items should be worked on first.
 
-### **F-003:** Basic table state machine and CRUD actions
+### **F-006:** Basic table state machine and CRUD actions
 
 - **Priority:** High
 - **Estimate:** Medium
 - **Technical Feature:**
   - In the `Table` class:
     - Implement state machine to reflect table state
-
-    - Implement function to create the table (from `TableRequirement`) in AWS
-
-    - Implement function to get table information from AWS
 
     - Implement function to sync table (with `TableRequirement` as declaration) in AWS
 
@@ -81,6 +77,16 @@ Items that have been successfully implemented:
   - Add Global Secondary Index (GSI) abstraction on `TableRequirement` schema
 
   - Ensure maximum type inference
+
+### **F-003:** Basic table CRUD actions
+
+- **Priority:** High
+- **Estimate:** Simple
+- **Technical Feature:**
+  - In the `Table` class:
+    - Implement function to create the table (from `TableRequirement`) in AWS
+
+    - Implement function to get table information from AWS
 
 ## Notes & Definitions
 
