@@ -36,7 +36,7 @@ import { TableDescriptionSch, type TableDescription } from './_schemas/_descript
 import type { localIndexDescription } from './_schemas/_descriptions/_local-index';
 import type { GlobalIndexDescription } from './_schemas/_descriptions/_global-index';
 
-const MAX_WAIT_TIME = 30; // seconds
+const MAX_WAIT_TIME_SECONDS = 30;
 
 export class Table<
   const R extends TableRequirement,
@@ -199,7 +199,10 @@ export class Table<
       })
     );
     logger.info(result.TableDescription, 'Table created');
-    await waitUntilTableExists({ client: c, maxWaitTime: MAX_WAIT_TIME }, { TableName: r.name });
+    await waitUntilTableExists(
+      { client: c, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { TableName: r.name }
+    );
   }
   async isUp(client?: DynamoDBClient): Promise<boolean> {
     const c = getClient(client);
@@ -233,7 +236,10 @@ export class Table<
         TableName: r.name,
       })
     );
-    await waitUntilTableNotExists({ client: c, maxWaitTime: MAX_WAIT_TIME }, { TableName: r.name });
+    await waitUntilTableNotExists(
+      { client: c, maxWaitTime: MAX_WAIT_TIME_SECONDS },
+      { TableName: r.name }
+    );
     logger.info(result.TableDescription, 'Table deleted');
   }
   /**
