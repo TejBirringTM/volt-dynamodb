@@ -35,6 +35,8 @@ import { VoltError } from '@/errors';
 import { TableDescriptionSch, type TableDescription } from './_schemas/_descriptions/_table';
 import type { localIndexDescription } from './_schemas/_descriptions/_local-index';
 import type { GlobalIndexDescription } from './_schemas/_descriptions/_global-index';
+import { diffRequirementAgainstDescription } from './_utils/_diff';
+import { _theseVarsWillBeUsedInTheFuture_ } from '@/utils/placeholders';
 
 const MAX_WAIT_TIME = 30; // seconds
 
@@ -241,10 +243,15 @@ export class Table<
    *
    * @param client the AWS SDK DynamoDB Client instance
    */
-  // sync(client?: DynamoDBClient): Promise<void> {
-  //   const _client = getClient(client);
-  //   throw new VoltError('unimplemented', 'Table', 'sync');
-  // }
+  async sync(client?: DynamoDBClient): Promise<void> {
+    const c = getClient(client);
+    const requirement = this.tableRequirement;
+    const description = await this.probe(c);
+    const diff = diffRequirementAgainstDescription(requirement, description);
+    _theseVarsWillBeUsedInTheFuture_(diff);
+    // TODO: implement this...
+    throw new VoltError('unimplemented', 'Table', 'sync');
+  }
   /**
    * Probe the table in AWS cloud infrastructure for information.
    * Throws if table does not exist.

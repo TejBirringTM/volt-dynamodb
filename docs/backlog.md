@@ -8,18 +8,6 @@ Please find log of [Key Decisions](#key-decisions) and [Current Blockers](#curre
 
 Items are ordered by priority. Higher items should be worked on first.
 
-### **F-006:** Basic table state machine and CRUD actions
-
-- **Priority:** High
-- **Estimate:** Medium
-- **Technical Feature:**
-  - In the `Table` class:
-    - Implement state machine to reflect table state
-
-    - Implement function to sync table (with `TableRequirement` as declaration) in AWS
-
-    - Implement mechanism to poll AWS for table information - possibly using worker thread
-
 ### **F-004:** Implement entity modelling
 
 - **Priority:** High
@@ -49,6 +37,18 @@ Items are ordered by priority. Higher items should be worked on first.
 
   - Implement the ability to make **_basic_ queries**
     - Return complete representation of items that fit the query as an array type
+
+### **F-006:** Basic table state machine
+
+- **Priority:** Medium
+- **Estimate:** Medium
+- **Technical Feature:**
+  - In the `Table` class:
+    - Implement state machine to reflect table state
+
+    - Implement function to sync table (with `TableRequirement` as declaration) in AWS
+
+    - Implement mechanism to poll AWS for table information - possibly using worker thread
 
 ## Icebox
 
